@@ -47,35 +47,22 @@ Avoid repeating the question. Focus on giving the best possible answer directly 
     const tasks = models.map(async (model) => {
       const start = process.hrtime.bigint();
       try {
-        if (model.startsWith("openai/") || model.startsWith("deepseek/")) {
-          const completion = await openai.chat.completions.create({
-            model,
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: prompt },
-            ],
-          });
-          const choice = completion.choices?.[0] ?? {};
-          const text =
-            choice.message?.content ??
-            choice.text ??
-            (typeof choice === "string" ? choice : "");
-          const tokenCount = completion.usage?.total_tokens ?? null;
-          const durationSecRaw = Number(process.hrtime.bigint() - start) / 1e9;
-          const durationSec = parseFloat(durationSecRaw.toFixed(2));
-          return { model, text, tokenCount, durationSec };
-        } else {
-          const response = await ai.models.generateContent({
-            model,
-            contents: prompt,
-            system_instruction: systemPrompt,
-          });
-          const text = response.text ?? response.output?.[0]?.content ?? "";
-          const tokenCount = response.usageMetadata?.totalTokenCount ?? null;
-          const durationSecRaw = Number(process.hrtime.bigint() - start) / 1e9;
-          const durationSec = parseFloat(durationSecRaw.toFixed(2));
-          return { model, text, tokenCount, durationSec };
-        }
+        const completion = await openai.chat.completions.create({
+          model,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: prompt },
+          ],
+        });
+        const choice = completion.choices?.[0] ?? {};
+        const text =
+          choice.message?.content ??
+          choice.text ??
+          (typeof choice === "string" ? choice : "");
+        const tokenCount = completion.usage?.total_tokens ?? null;
+        const durationSecRaw = Number(process.hrtime.bigint() - start) / 1e9;
+        const durationSec = parseFloat(durationSecRaw.toFixed(2));
+        return { model, text, tokenCount, durationSec };
       } catch (err) {
         const durationSecRaw = Number(process.hrtime.bigint() - start) / 1e9;
         const durationSec = parseFloat(durationSecRaw.toFixed(2));
