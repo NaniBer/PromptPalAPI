@@ -68,6 +68,7 @@ Avoid repeating the question. Focus on giving the best possible answer directly 
           const response = await ai.models.generateContent({
             model,
             contents: prompt,
+            system_instruction: systemPrompt,
           });
           const text = response.text ?? response.output?.[0]?.content ?? "";
           const tokenCount = response.usageMetadata?.totalTokenCount ?? null;
