@@ -27,6 +27,12 @@ app.get("/", (req, res) => {
 });
 
 app.post("/compare", async (req, res) => {
+  const systemPrompt = `
+You are a helpful, intelligent, and articulate AI assistant.
+Your goal is to respond clearly, thoughtfully, and truthfully to the user's prompt.
+Be consistent in tone and structure so your answer can be fairly compared with other models.
+Avoid repeating the question. Focus on giving the best possible answer directly and accurately in under 1000 characters.
+`;
   try {
     const { prompt, models } = req.body;
 
@@ -44,7 +50,10 @@ app.post("/compare", async (req, res) => {
         if (model.startsWith("openai/") || model.startsWith("deepseek/")) {
           const completion = await openai.chat.completions.create({
             model,
-            messages: [{ role: "user", content: prompt }],
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: prompt },
+            ],
           });
           const choice = completion.choices?.[0] ?? {};
           const text =
